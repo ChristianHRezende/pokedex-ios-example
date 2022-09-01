@@ -7,11 +7,13 @@
 
 import UIKit
 
-class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource {
+class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
     private var pokemons:[Pokemon] = []
-    private var names:[String] = ["A","B","C"]
+    private var names:[String] = ["A","B","C","A","B","C","A","B","C","A","B","C"]
     
     private var pokemonsTableView :UITableView!
+    
+    private var pokemonsUICollectionView :UICollectionView!
     
     
     private lazy var button:UIButton = {
@@ -60,12 +62,36 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let displayWidth: CGFloat = self.view.frame.width
         let displayHeight: CGFloat = self.view.frame.height
         
-        pokemonsTableView = UITableView(frame: CGRect(x:0,y: barHeight,width: displayWidth, height: displayHeight - barHeight))
-        pokemonsTableView.register(UITableViewCell.self,forCellReuseIdentifier:"cellPokemon")
-        pokemonsTableView.dataSource = self
-        pokemonsTableView.delegate = self
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .vertical
+        layout.itemSize = CGSize(width: (view.frame.size.width/3) - 4, height: (view.frame.size.width/3) - 4)
+        layout.minimumLineSpacing = 20
+        layout.minimumInteritemSpacing = 1
         
-        self.view.addSubview(pokemonsTableView)
+        
+        
+        pokemonsUICollectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
+        
+        guard let collectionView = pokemonsUICollectionView else {
+            return
+        }
+        
+        collectionView.register(PokemonCollectionViewCell.self,forCellWithReuseIdentifier: PokemonCollectionViewCell.identifier)
+        collectionView.dataSource = self
+        collectionView.delegate = self
+        
+        view.addSubview(collectionView)
+        
+        collectionView.frame = view.bounds
+
+        
+//        UI TABLE VIEW
+//        pokemonsTableView = UITableView(frame: CGRect(x:0,y: barHeight,width: displayWidth, height: displayHeight - barHeight))
+//        pokemonsTableView.register(UITableViewCell.self,forCellReuseIdentifier:"cellPokemon")
+//        pokemonsTableView.dataSource = self
+//        pokemonsTableView.delegate = self
+//
+//        self.view.addSubview(pokemonsTableView)
    
 //        self.view.addSubview(stackView)
         
@@ -94,26 +120,31 @@ class ViewController: UIViewController,UITableViewDelegate,UITableViewDataSource
         let pokemonService = PokemonService()
         pokemonService.fetchPokemons { pokemon in
             self.pokemons.append(pokemon)
+            DispatchQueue.main.async {
+                self.pokemonsUICollectionView.reloadData()
+            }
             print(self.pokemons[self.pokemons.count - 1 ].name)
         }
         
     }
     
-    func numberOfSections(in tableView: UITableView) -> Int {
-        return 1
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return pokemons.count
     }
     
-    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return names.count
-    }
-    
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "cellPokemon", for: indexPath)
-        var contentConfiguration = cell.defaultContentConfiguration()
-        contentConfiguration.text = names[indexPath.row]
-        cell.contentConfiguration = contentConfiguration
-        return cell
-    }
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: PokemonCollectionViewCell.identifier, for: indexPath) as! PokemonCollectionViewCell
+        if let name = pokemons[indexPath.row].name {
+            if let pokemonNumber = pokemons[indexPath.row].id {
+                cell.configure(pokemonName: name, pokemonNumber: pokemonNumber)
 
+            }
+        }
+        
+        return cell
+        
+    }
+  
+    
 }
 
