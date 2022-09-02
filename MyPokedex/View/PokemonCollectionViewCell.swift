@@ -7,13 +7,13 @@
 
 import UIKit
 import SwiftUI
+import SDWebImage
 
 class PokemonCollectionViewCell: UICollectionViewCell {
     static let identifier = "CustomPokemonCollectionCell"
     
     private let pokemonNumber:UILabel = {
         let label = UILabel()
-        label.text = "#001"
         label.textAlignment = .right
         return label
     }()
@@ -42,14 +42,14 @@ class PokemonCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
-        
-        pokemonNumber.textColor = ThemeVariables.colorGreen
-        pokemonName.backgroundColor = ThemeVariables.colorGreen
+        let colorContent = ThemeVariables.getNextColor()
+        pokemonNumber.textColor = colorContent
+        pokemonName.backgroundColor = colorContent
 
         contentView.layer.masksToBounds = true
         contentView.layer.cornerRadius = 10
         contentView.layer.borderWidth = 1
-        contentView.layer.borderColor = ThemeVariables.colorGreen.cgColor
+        contentView.layer.borderColor = colorContent.cgColor
         contentView.contentMode = .center
 
         contentView.addSubview(pokemonNumber)
@@ -67,14 +67,16 @@ class PokemonCollectionViewCell: UICollectionViewCell {
         contentView.frame = CGRect(x: 8, y: 0, width: 104, height: 115)
 
         pokemonNumber.frame = CGRect(x:-5,y: 3,width: 104,height: 16)
-        imageView.frame = CGRect(x: 0, y:  19, width: 104,height: 72)
         pokemonName.frame = CGRect(x: 0, y: 90 , width: 104,  height: 24)
-
+        imageView.frame = CGRect(x: 0, y:  19, width: 104,height: 72)
     }
     
-    public func configure(pokemonName:String,pokemonNumber:Int){
+    public func configure(pokemonName:String,pokemonNumber:Int,image:URL?){
         self.pokemonName.text = pokemonName
-        self.pokemonNumber.text = String(pokemonNumber)
+        self.pokemonNumber.text = "#"+String(pokemonNumber)
+        if (image != nil) {
+            self.imageView.sd_setImage(with: image)
+        }
     }
     
     override func prepareForReuse() {

@@ -12,7 +12,7 @@ class PokemonService{
     var pokemonsDTO:[URLInfoObjectResponse] = []
     
     public func fetchPokemons(completionHandler:@escaping (Pokemon)-> Void){
-        if let url = URL(string: "https://pokeapi.co/api/v2/pokemon/?limit=20&offset=20") {
+        if let url = URL(string: "https://pokeapi.co/api/v2/pokemon/?limit=9&offset=1") {
             let task = URLSession.shared.dataTask(with: url) { data, response, error in
                 
                 if let error = error {

@@ -9,12 +9,18 @@ import Foundation
 
 class Pokemon {
     var name:String?
-    var image:String?
+    var image:URL?
     var id:Int?
+    var order:Int?
     
     init(pokemonDTO:PokemonDetailResponseDTO) {
         self.name = pokemonDTO.name
-        self.image = pokemonDTO.sprites.frontDefault
+        if let urlImage = URL(string:pokemonDTO.sprites.frontDefault){
+            self.image  = urlImage
+        }else {
+            self.image = nil
+        }
         self.id = pokemonDTO.id
+        self.order = pokemonDTO.order
     }
 }

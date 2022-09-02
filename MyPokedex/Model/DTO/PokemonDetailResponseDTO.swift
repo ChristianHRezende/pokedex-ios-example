@@ -14,6 +14,7 @@ class PokemonDetailResponseDTO:Codable {
     var name:String
     var sprites:SpriteDTO
     var weight:Int
+    var order:Int
     var id:Int
 }
 
