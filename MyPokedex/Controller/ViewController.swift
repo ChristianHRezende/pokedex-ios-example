@@ -13,6 +13,8 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     
     private var pokemonsTableView :UITableView!
     
+    private var page:Int = 0
+    
 
     private lazy var mainStackView:UIStackView = {
         let stackView = UIStackView()
@@ -24,12 +26,35 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         return stackView
     }()
     
+    private lazy var logoImageView:UIImageView = {
+        let view = UIImageView(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.image = UIImage(named: "pokeball_black_white")
+        view.contentMode = .scaleToFill
+        return view
+    }()
+    
+    private lazy var titleHeader:UILabel = {
+        let view = UILabel(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+        view.layer.cornerRadius = 20
+        view.textColor = .black
+        view.text = "Pokédex"
+        view.textAlignment = .left
+        view.layer.cornerRadius = 10
+        return view
+    }()
+    
     private lazy var headerStackView:UIStackView = {
         let stackView = UIStackView()
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .horizontal
         stackView.spacing = 1
         stackView.alignment = .center
+//        stackView.backgroundColor = .red
+        
+        stackView.addArrangedSubview(logoImageView)
+        stackView.addArrangedSubview(titleHeader)
         return stackView
     }()
     
@@ -40,25 +65,47 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         layout.minimumLineSpacing = 10
         layout.minimumInteritemSpacing = 1
         let pokemonsUICollectionView:UICollectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
-        
+        pokemonsUICollectionView.register(PokemonCollectionViewCell.self,forCellWithReuseIdentifier: PokemonCollectionViewCell.identifier)
+
         return pokemonsUICollectionView
     }()
+
     
-    private lazy var logoImageView:UIImageView = {
-        let view = UIImageView(frame: .zero)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.image = UIImage(named: "pokeball_black_white")
-        view.contentMode = .scaleToFill
-        return view
+    private lazy var pokemonsActivityIndicator:UIActivityIndicatorView = {
+        var spinner = UIActivityIndicatorView(style: .large)
+        spinner.translatesAutoresizingMaskIntoConstraints = false
+        return spinner
     }()
     
-    private lazy var button:UIButton = {
+    private lazy var nextButton:UIButton = {
         let view  =  UIButton(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.setTitle("Acessar", for: .normal)
-        view.backgroundColor = .red
+//        view.setTitle("Next", for: .normal)
+        view.setImage(UIImage(named: "fowardArrow.svg"), for: .normal)
+//        view.backgroundColor = .red
+        view.addTarget(self, action: #selector(self.nextButtonClickHandle), for: .touchUpInside)
         return view
     }()
+    
+    @objc func nextButtonClickHandle(){
+        getPokemons(self.page)
+        self.page+=1
+    }
+    
+    private lazy var backPageButton:UIButton = {
+        let view  =  UIButton(frame: .zero)
+        view.translatesAutoresizingMaskIntoConstraints = false
+//        view.setTitle("Back", for: .normal)
+        view.setImage(UIImage(named: "backArrow.svg"), for: .normal)
+//        view.backgroundColor = .red
+        view.addTarget(self, action: #selector(self.backPageButtonClickHandle), for: .touchUpInside)
+        return view
+    }()
+    
+    @objc func backPageButtonClickHandle(){
+        self.page-=1
+        getPokemons(self.page)
+    }
     
     private lazy var button2:UIButton = {
         let view  =  UIButton(frame: .zero)
@@ -68,18 +115,45 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         return view
     }()
     
-    private lazy var textLabel:UILabel = {
-        let view = UILabel(frame: .zero)
-        view.translatesAutoresizingMaskIntoConstraints = false
-        view.layer.cornerRadius = 20
-        view.backgroundColor = #colorLiteral(red: 0.05882352963, green: 0.180392161, blue: 0.2470588237, alpha: 0.25)
-        view.textColor = .red
-        view.text = "TESTETSETES"
-        view.textAlignment = .center
-        view.layer.cornerRadius = 10
-        return view
+    private lazy var paginationStackView:UIStackView = {
+        let stackView = UIStackView()
+        stackView.translatesAutoresizingMaskIntoConstraints = false
+        stackView.axis = .horizontal
+        stackView.spacing = 1
+        stackView.alignment = .center
+        stackView.distribution = .equalSpacing
+        
+        stackView.addArrangedSubview(backPageButton)
+        stackView.addArrangedSubview(nextButton)
+        return stackView
     }()
     
+ 
+    fileprivate func getPokemons(_ page:Int? = nil) {
+
+        if(self.pokemons.count > 0){
+            self.pokemons.removeAll()
+            self.pokemonsUICollectionView.reloadData()
+            
+        }
+
+        pokemonsActivityIndicator.startAnimating()
+
+        let pokemonService = PokemonService()
+        pokemonService.fetchPokemons(page) { pokemon in
+            self.pokemons.append(pokemon)
+            DispatchQueue.main.async {
+                self.pokemonsUICollectionView.reloadData()
+                self.pokemonsActivityIndicator.stopAnimating()
+                
+                if(self.page == 0){
+                    self.backPageButton.isEnabled = false
+                }else {
+                    self.backPageButton.isEnabled = true
+                }
+            }
+        }
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -87,18 +161,16 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         self.view.backgroundColor = .white
         
         
-        headerStackView.addArrangedSubview(logoImageView)
-        headerStackView.addArrangedSubview(button2)
-
-        
-        pokemonsUICollectionView.register(PokemonCollectionViewCell.self,forCellWithReuseIdentifier: PokemonCollectionViewCell.identifier)
         pokemonsUICollectionView.dataSource = self
         pokemonsUICollectionView.delegate = self
         
         mainStackView.addArrangedSubview(headerStackView)
         mainStackView.addArrangedSubview(pokemonsUICollectionView)
+        mainStackView.addArrangedSubview(paginationStackView)
+
         
         view.addSubview(mainStackView)
+        view.addSubview(pokemonsActivityIndicator)
         
         pokemonsUICollectionView.frame = view.bounds
         
@@ -117,6 +189,8 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         let displayWidth: CGFloat = self.view.frame.width
         let displayHeight: CGFloat = self.view.frame.height
         
+        
+        // HEADER
         logoImageView.heightAnchor.constraint(equalToConstant: 24).isActive = true
         logoImageView.widthAnchor.constraint(equalToConstant: 24).isActive = true
         logoImageView.leftAnchor.constraint(equalTo: self.view.leftAnchor, constant: 16).isActive = true
@@ -126,13 +200,28 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         headerStackView.frame = CGRect(x:-5,y: barHeight + 100,width: displayWidth,height: 16)
         
 
+        titleHeader.leftAnchor.constraint(equalTo: self.logoImageView.rightAnchor,constant: 16).isActive = true
 
        
+        // BODY
+        pokemonsActivityIndicator.centerXAnchor.constraint(equalTo: view.centerXAnchor).isActive = true
+        pokemonsActivityIndicator.centerYAnchor.constraint(equalTo: view.centerYAnchor).isActive = true
         
         mainStackView.topAnchor.constraint(equalTo: self.view.topAnchor,constant: 0).isActive = true
         mainStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,constant: 0).isActive = true
         mainStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor,constant: 0).isActive = true
-        mainStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor,constant: 0).isActive = true
+        mainStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor,constant: -250).isActive = true
+        
+        nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -40).isActive = true
+        nextButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        nextButton.widthAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        backPageButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20).isActive = true
+        backPageButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
+        backPageButton.widthAnchor.constraint(equalToConstant: 48).isActive = true
+
+        
+
         //
         //
         //        textLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
@@ -149,14 +238,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         //        button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100).isActive = true
         //        button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10).isActive = true
         //        button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
-        
-        let pokemonService = PokemonService()
-        pokemonService.fetchPokemons { pokemon in
-            self.pokemons.append(pokemon)
-            DispatchQueue.main.async {
-                self.pokemonsUICollectionView.reloadData()
-            }
-        }
+        getPokemons()
     }
     
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
