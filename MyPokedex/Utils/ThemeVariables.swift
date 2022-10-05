@@ -10,6 +10,7 @@ import UIKit
 
 public class ThemeVariables {
     
+    // TODO: Improve color by element
     public static let colorGreen:UIColor = rgbToUIColor(red: 116, green: 203, blue: 72)
     public static let colorOrange:UIColor = rgbToUIColor(red: 245, green: 125, blue: 49)
     public static let colorBlue:UIColor = rgbToUIColor(red: 100, green: 147, blue: 235)

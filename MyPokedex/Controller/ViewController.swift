@@ -9,8 +9,6 @@ import UIKit
 
 class ViewController: UIViewController,UICollectionViewDelegate,UICollectionViewDataSource {
     private var pokemons:[Pokemon] = []
-    private var names:[String] = ["A","B","C","A","B","C","A","B","C","A","B","C"]
-    
     private var pokemonsTableView :UITableView!
     
     private var page:Int = 0
@@ -21,6 +19,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.axis = .vertical
         stackView.spacing = 20.0
+        stackView.distribution = .equalSpacing
         //        stackView.alignment = .center
         //        stackView.distribution = .fillEqually
         return stackView
@@ -51,8 +50,6 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         stackView.axis = .horizontal
         stackView.spacing = 1
         stackView.alignment = .center
-//        stackView.backgroundColor = .red
-        
         stackView.addArrangedSubview(logoImageView)
         stackView.addArrangedSubview(titleHeader)
         return stackView
@@ -80,14 +77,13 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     private lazy var nextButton:UIButton = {
         let view  =  UIButton(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-//        view.setTitle("Next", for: .normal)
         view.setImage(UIImage(named: "fowardArrow.svg"), for: .normal)
-//        view.backgroundColor = .red
         view.addTarget(self, action: #selector(self.nextButtonClickHandle), for: .touchUpInside)
         return view
     }()
     
     @objc func nextButtonClickHandle(){
+        print("cLk")
         getPokemons(self.page)
         self.page+=1
     }
@@ -95,9 +91,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     private lazy var backPageButton:UIButton = {
         let view  =  UIButton(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-//        view.setTitle("Back", for: .normal)
         view.setImage(UIImage(named: "backArrow.svg"), for: .normal)
-//        view.backgroundColor = .red
         view.addTarget(self, action: #selector(self.backPageButtonClickHandle), for: .touchUpInside)
         return view
     }()
@@ -210,34 +204,24 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         mainStackView.topAnchor.constraint(equalTo: self.view.topAnchor,constant: 0).isActive = true
         mainStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor,constant: 0).isActive = true
         mainStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor,constant: 0).isActive = true
-        mainStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor,constant: -250).isActive = true
+        mainStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor,constant: 0).isActive = true
         
-        nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -40).isActive = true
+        pokemonsUICollectionView.heightAnchor.constraint(equalToConstant: 500).isActive = true
+        
+        nextButton.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -20).isActive = true
         nextButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
         nextButton.widthAnchor.constraint(equalToConstant: 48).isActive = true
         
         backPageButton.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 20).isActive = true
         backPageButton.heightAnchor.constraint(equalToConstant: 48).isActive = true
         backPageButton.widthAnchor.constraint(equalToConstant: 48).isActive = true
+        
+        paginationStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 0).isActive = true
+        paginationStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: 0).isActive = true
+        paginationStackView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100).isActive = true
 
-        
+        paginationStackView.heightAnchor.constraint(equalToConstant: 50).isActive = true
 
-        //
-        //
-        //        textLabel.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        //        textLabel.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        //
-        //        button.widthAnchor.constraint(equalToConstant: 100).isActive = true
-        //        button.heightAnchor.constraint(equalToConstant: 100).isActive = true
-        
-        
-        //        textLabel.topAnchor.constraint(equalTo: self.view.topAnchor,constant: 50).isActive = true
-        //        textLabel.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10).isActive = true
-        //        textLabel.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
-        
-        //        button.bottomAnchor.constraint(equalTo: self.view.bottomAnchor, constant: -100).isActive = true
-        //        button.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10).isActive = true
-        //        button.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
         getPokemons()
     }
     
@@ -255,6 +239,16 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
             }
         }
         return cell
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, didSelectItemAt indexPath: IndexPath) {
+        let pokemon = pokemons[indexPath.row]
+        if(pokemon.id != nil){
+            let nextViewController = DetailPokemonViewController()
+            nextViewController.pokemon = pokemon
+            self.navigationController?.pushViewController(nextViewController, animated: true)
+        }
+        
     }
 }
 

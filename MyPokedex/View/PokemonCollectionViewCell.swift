@@ -7,8 +7,7 @@
 
 import UIKit
 import SwiftUI
-import SDWebImage
-
+ 
 class PokemonCollectionViewCell: UICollectionViewCell {
     static let identifier = "CustomPokemonCollectionCell"
     
@@ -18,7 +17,6 @@ class PokemonCollectionViewCell: UICollectionViewCell {
         return label
     }()
     
-    
     private let imageView:UIImageView = {
         let imageView = UIImageView()
         imageView.image = UIImage(systemName:"house")
@@ -27,7 +25,6 @@ class PokemonCollectionViewCell: UICollectionViewCell {
 
         return  imageView
     }()
-
     
     private let pokemonName:UILabel = {
         let label = UILabel()
@@ -72,7 +69,7 @@ class PokemonCollectionViewCell: UICollectionViewCell {
     }
     
     public func configure(pokemonName:String,pokemonNumber:Int,image:URL?){
-        self.pokemonName.text = pokemonName
+        self.pokemonName.text = pokemonName.capitalized
         self.pokemonNumber.text = "#"+String(pokemonNumber)
         if (image != nil) {
             self.imageView.sd_setImage(with: image)
