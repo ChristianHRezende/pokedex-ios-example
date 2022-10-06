@@ -39,6 +39,8 @@ class PokemonCollectionViewCell: UICollectionViewCell {
     
     override init(frame: CGRect) {
         super.init(frame: frame)
+        self.backgroundColor = .white
+        
         let colorContent = ThemeVariables.getNextColor()
         pokemonNumber.textColor = colorContent
         pokemonName.backgroundColor = colorContent

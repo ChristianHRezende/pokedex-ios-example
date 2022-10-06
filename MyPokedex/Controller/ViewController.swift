@@ -20,8 +20,6 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         stackView.axis = .vertical
         stackView.spacing = 20.0
         stackView.distribution = .equalSpacing
-        //        stackView.alignment = .center
-        //        stackView.distribution = .fillEqually
         return stackView
     }()
     
@@ -63,6 +61,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         layout.minimumInteritemSpacing = 1
         let pokemonsUICollectionView:UICollectionView = UICollectionView(frame: .zero,collectionViewLayout: layout)
         pokemonsUICollectionView.register(PokemonCollectionViewCell.self,forCellWithReuseIdentifier: PokemonCollectionViewCell.identifier)
+        pokemonsUICollectionView.backgroundColor = ThemeVariables.colorLightGrey
 
         return pokemonsUICollectionView
     }()
@@ -83,7 +82,6 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     }()
     
     @objc func nextButtonClickHandle(){
-        print("cLk")
         getPokemons(self.page)
         self.page+=1
     }
@@ -152,7 +150,7 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        self.view.backgroundColor = .white
+        self.view.backgroundColor = ThemeVariables.colorLightGrey
         
         
         pokemonsUICollectionView.dataSource = self
@@ -167,17 +165,6 @@ class ViewController: UIViewController,UICollectionViewDelegate,UICollectionView
         view.addSubview(pokemonsActivityIndicator)
         
         pokemonsUICollectionView.frame = view.bounds
-        
-        
-        //        UI TABLE VIEW
-        //        pokemonsTableView = UITableView(frame: CGRect(x:0,y: barHeight,width: displayWidth, height: displayHeight - barHeight))
-        //        pokemonsTableView.register(UITableViewCell.self,forCellReuseIdentifier:"cellPokemon")
-        //        pokemonsTableView.dataSource = self
-        //        pokemonsTableView.delegate = self
-        //
-        //        self.view.addSubview(pokemonsTableView)
-        
-        //        self.view.addSubview(stackView)
         
         let barHeight: CGFloat = UIApplication.shared.statusBarFrame.size.height
         let displayWidth: CGFloat = self.view.frame.width

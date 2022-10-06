@@ -20,6 +20,8 @@ public class ThemeVariables {
     public static let colorLightBrown:UIColor = rgbToUIColor(red: 170, green: 166, blue: 127)
     public static let colorPink:UIColor = rgbToUIColor(red: 251, green: 85, blue: 132)
     public static let colorGrey:UIColor = rgbToUIColor(red: 183, green: 185, blue: 208)
+    public static let colorLightGrey:UIColor = rgbToUIColor(red: 247, green: 247, blue: 247)
+
 
     public static func getNextColor()->UIColor {
         let arrayColors = [
@@ -34,10 +36,7 @@ public class ThemeVariables {
             colorGrey
         ]
         let randomNumber = Int.random(in: 0...arrayColors.count - 2)
-        print(randomNumber )
         let color  = arrayColors[randomNumber]
-       
-        print(color)
         return color
     }
     

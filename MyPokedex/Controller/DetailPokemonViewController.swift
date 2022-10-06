@@ -13,21 +13,6 @@ class DetailPokemonViewController: UIViewController {
     
     private let primaryColor = ThemeVariables.getNextColor()
     
-    
-    private lazy var pokemonActivityIndicator:UIActivityIndicatorView = {
-        var spinner = UIActivityIndicatorView(style: .large)
-        spinner.translatesAutoresizingMaskIntoConstraints = false
-        return spinner
-    }()
-    
-//    private lazy var scrollView: UIScrollView = {
-//            let scroll = UIScrollView()
-//            scroll.translatesAutoresizingMaskIntoConstraints = false
-//            scroll.delegate = self
-//            scroll.contentSize = CGSize(width: self.view.frame.size.width, height:  self.view.frame.size.height)
-//            return scroll
-//        }()
-    
     private lazy var pokeballOpaqueImageView: UIImageView = {
         let view  = UIImageView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
@@ -188,13 +173,8 @@ class DetailPokemonViewController: UIViewController {
                 }
                 
             }
-            
-           
-            
             pokemonAboutStackView.leadingAnchor.constraint(equalTo: self.view.leadingAnchor, constant: 10).isActive = true
             pokemonAboutStackView.trailingAnchor.constraint(equalTo: self.view.trailingAnchor, constant: -10).isActive = true
-            
-            
             
         }
         
